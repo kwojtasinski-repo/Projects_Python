@@ -1,27 +1,23 @@
 from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from .models import Todo
+from .decorators import post_only_redirect_home
 from django.http import HttpResponseRedirect
 
-# Create your views here.
 def home(request):
     todo_items = Todo.objects.all().order_by("add_date")
     return render(request, 'site/index.html', {"todo_items": todo_items})
 
-@csrf_exempt
-def add_to_do(request):
+@post_only_redirect_home
+def add_todo(request):
     curr_date = timezone.now()
-    txt = request.POST["content"]
-    #print("Time {:%Y-%m-%d %H:%M:%S}".format(add_date))
-    #print(content)
-    created_obj = Todo.objects.create(content=txt, add_date=curr_date)
-    #return render(request, 'site/index.html')
+    txt = request.POST.get("content")
+    if txt:
+        Todo.objects.create(content=txt, add_date=curr_date)
+
     return HttpResponseRedirect("/")
 
-@csrf_exempt
-def delete_todo(request, todo_id):
-    #print(todo_id)
-    print(Todo.objects.all())
+@post_only_redirect_home
+def delete_todo(_, todo_id):
     Todo.objects.get(id=todo_id).delete()
     return HttpResponseRedirect("/")

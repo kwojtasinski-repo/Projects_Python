@@ -8,5 +8,5 @@ urlpatterns=[
   path('delete_todo/<int:todo_id>/', views.delete_todo, name='delete_todo'),
 
   # Fallback for any other paths
-  path('<path:anything>/', RedirectView.as_view(url='/', permanent=False)),
+  path('<path:anything>/', RedirectView.as_view(url='/', permanent=False))
 ]

@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 from django.views.generic.base import RedirectView
 
@@ -8,5 +8,5 @@ urlpatterns=[
   path('delete_todo/<int:todo_id>/', views.delete_todo, name='delete_todo'),
 
   # Fallback for any other paths
-  path('<path:anything>/', RedirectView.as_view(url='/', permanent=False))
+  re_path(r'^.*$', RedirectView.as_view(url='/', permanent=False))
 ]

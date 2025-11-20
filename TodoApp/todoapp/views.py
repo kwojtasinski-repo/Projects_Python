@@ -1,23 +1,22 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils import timezone
 from .models import Todo
 from .decorators import post_only_redirect_home
-from django.http import HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse
 
-def home(request):
+def home(request: HttpRequest) -> HttpResponse:
     todo_items = Todo.objects.all().order_by("add_date")
     return render(request, 'site/index.html', {"todo_items": todo_items})
 
 @post_only_redirect_home
-def add_todo(request):
-    curr_date = timezone.now()
-    txt = request.POST.get("content")
+def add_todo(request: HttpRequest) -> HttpResponse:
+    txt = request.POST.get("content", "").strip()
     if txt:
-        Todo.objects.create(content=txt, add_date=curr_date)
+        Todo.objects.create(content=txt, add_date=timezone.now())
 
-    return HttpResponseRedirect("/")
+    return redirect("/")
 
 @post_only_redirect_home
-def delete_todo(_, todo_id):
-    Todo.objects.get(id=todo_id).delete()
-    return HttpResponseRedirect("/")
+def delete_todo(_: HttpRequest, todo_id: int) -> HttpResponse:
+    Todo.objects.filter(id=todo_id).delete()
+    return redirect("/")

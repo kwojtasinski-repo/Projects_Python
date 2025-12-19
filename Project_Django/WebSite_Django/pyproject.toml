@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "website-django"
+version = "0.1.0"
+description = "Small Django web scraper project"
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "Django>=5.2,<6.0",
+    "requests>=2.31",
+    "beautifulsoup4>=4.12",
+    "gunicorn>=21.2",
+    "whitenoise>=6.6",
+    "psycopg2-binary>=2.9",
+    "python-dotenv>=1.0",
+]
+
+[tool.setuptools]
+packages = ["myapp", "WebSite_Django"]

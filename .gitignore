@@ -1,4 +1,18 @@
 /.vscode
 
+# Python
 __pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# Packaging
+*.egg-info/
+dist/
+build/
+
+# Django
 db.sqlite3
+staticfiles/

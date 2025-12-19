@@ -1,5 +1,4 @@
 from django.shortcuts import redirect, render
-from requests.compat import quote_plus
 from .decorators import post_only_redirect_home
 from . import models
 from .scraper import fetch_posts

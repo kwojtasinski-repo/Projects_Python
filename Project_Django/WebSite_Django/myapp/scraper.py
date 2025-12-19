@@ -6,7 +6,13 @@ from requests.compat import quote_plus
 BASE_CRAIGSLIST_URL = "https://losangeles.craigslist.org/search/?query={}"
 BASE_IMAGE_URL = "https://images.craigslist.org/{}_300x300.jpg"
 DEFAULT_IMAGE_URL = "https://craigslist.org/images/peace.jpg"
-
+DEFAULT_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/120.0 Safari/537.36"
+    )
+}
 
 def fetch_posts(search: str) -> list[dict]:
     """
@@ -15,7 +21,7 @@ def fetch_posts(search: str) -> list[dict]:
     """
     final_url = BASE_CRAIGSLIST_URL.format(quote_plus(search))
 
-    response = requests.get(final_url, timeout=10)
+    response = requests.get(final_url, timeout=10, headers=DEFAULT_HEADERS)
     response.raise_for_status()
 
     html = response.text

@@ -8,5 +8,5 @@ urlpatterns = [
 
     # Fallback for any other paths
     path("", RedirectView.as_view(url="polls/", permanent=False)),
-    path('<path:anything>', RedirectView.as_view(url='polls/', permanent=False))
+    path('<path:anything>/', RedirectView.as_view(url='polls/', permanent=False))
 ]

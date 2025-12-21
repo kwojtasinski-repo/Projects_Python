@@ -15,7 +15,7 @@ class Command(BaseCommand):
         email = os.environ.get("DJANGO_ADMIN_EMAIL", "")
 
         if not username or not password:
-            self.stdout.write("Admin credentials not provided – skipping")
+            self.stdout.write(self.style.WARNING("Admin credentials not provided – skipping"))
             return
 
         if User.objects.filter(username=username).exists():
@@ -28,4 +28,4 @@ class Command(BaseCommand):
             email=email,
         )
 
-        self.stdout.write("Admin user created")
+        self.stdout.write(self.style.SUCCESS("Admin user created"))

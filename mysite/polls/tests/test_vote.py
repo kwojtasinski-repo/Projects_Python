@@ -3,29 +3,7 @@ import datetime
 from django.test import TestCase
 from django.utils import timezone
 from django.urls import reverse
-from .models import Question, Choice
-
-class QuestionResultsViewTests(TestCase):
-    def test_results_view_with_past_question(self):
-        question = Question.objects.create(
-            question_text="Past question.",
-            pub_date=timezone.now() - datetime.timedelta(days=5),
-        )
-        url = reverse("polls:results", args=(question.id,))
-        response = self.client.get(url)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, question.question_text)
-
-    def test_results_view_with_future_question(self):
-        question = Question.objects.create(
-            question_text="Future question.",
-            pub_date=timezone.now() + datetime.timedelta(days=5),
-        )
-        url = reverse("polls:results", args=(question.id,))
-        response = self.client.get(url)
-
-        self.assertEqual(response.status_code, 404)
+from ..models import Question, Choice
 
 class QuestionVoteTests(TestCase):
     def test_vote_increments_choice_votes(self):
@@ -87,9 +65,3 @@ class QuestionVoteTests(TestCase):
         response = self.client.post(url, {"choice": 1})
 
         self.assertEqual(response.status_code, 404)
-
-class NotFoundViewTests(TestCase):
-    def test_custom_404_template_used(self):
-        response = self.client.get("/definitely-not-existing/")
-        self.assertEqual(response.status_code, 404)
-        self.assertTemplateUsed(response, "polls/not_found.html")

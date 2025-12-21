@@ -51,3 +51,7 @@ class ResultsView(generic.DetailView):
         return HttpResponseRedirect(
             reverse("polls:results", args=(question.id,))
         )
+
+def not_found(request, exception):
+    print("404 error handler called")
+    return render(request, "polls/not_found.html", status=404)

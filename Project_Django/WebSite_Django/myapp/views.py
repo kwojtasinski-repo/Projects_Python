@@ -7,7 +7,7 @@ BASE_CRAIGSLIST_URL = 'https://losangeles.craigslist.org/search/?query={}'
 BASE_IMAGE_URL = 'https://images.craigslist.org/{}_300x300.jpg'
 
 def home(request):
-    return render(request, 'base.html')
+    return render(request, 'index.html')
 
 @post_only_redirect_home
 def new_search(request):

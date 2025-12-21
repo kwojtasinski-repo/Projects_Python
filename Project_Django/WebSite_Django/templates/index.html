@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Home | Django App{% endblock %}
+
+{% block content %}
+
+<h1 class="center-align">
+    What do you want to search for on this Django App?
+</h1>
+
+<div class="row">
+
+    <div class="col s4">
+        <div class="center">
+            <i class="large material-icons" style="color: #EE6E73">flash_on</i>
+            <p>Fast web scraper</p>
+            <p class="light center">Scrape away right here with a beautiful GUI.</p>
+        </div>
+    </div>
+
+    <div class="col s4">
+        <div class="center">
+            <i class="large material-icons" style="color: orange">camera</i>
+            <p>Filter your searches</p>
+            <p class="light center">Built in functionality to filter.</p>
+        </div>
+    </div>
+
+    <div class="col s4">
+        <div class="center">
+            <i class="large material-icons" style="color: blue">chrome_reader_mode</i>
+            <p>Nice stuff</p>
+            <p class="light center">Built this with ❤️</p>
+        </div>
+    </div>
+
+</div>
+
+<form action="{% url 'new_search' %}" method="post">
+    {% csrf_token %}
+    <input type="text" name="search" placeholder="search">
+    <button class="btn waves-effect waves-light" type="submit">
+        Submit
+        <i class="material-icons right">send</i>
+    </button>
+</form>
+
+{% endblock %}

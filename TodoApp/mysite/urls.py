@@ -21,3 +21,5 @@ urlpatterns = [
     path("", include("todoapp.urls")),  # sciezka do todoapp
     path("admin/", admin.site.urls),
 ]
+
+handler404 = "todoapp.views.not_found"

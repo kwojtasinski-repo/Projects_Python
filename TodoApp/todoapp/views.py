@@ -24,3 +24,7 @@ def add_todo(request: HttpRequest) -> HttpResponse:
 def delete_todo(_: HttpRequest, todo_id: int) -> HttpResponse:
     Todo.objects.filter(id=todo_id).delete()
     return redirect("/")
+
+def not_found(request, exception):
+    print("404 error handler called")
+    return render(request, "site/not_found.html", status=404)

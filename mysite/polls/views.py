@@ -16,22 +16,25 @@ class IndexView(generic.ListView):
             .order_by("-pub_date")[:5]
         )
 
-
-class DetailView(generic.DetailView):
-    model = Question
-    template_name = "polls/detail.html"
-
+class PublishedQuestionMixin:
     def get_queryset(self):
         return Question.objects.filter(pub_date__lte=timezone.now())
 
+class DetailView(PublishedQuestionMixin, generic.DetailView):
+    model = Question
+    template_name = "polls/detail.html"
 
-class ResultsView(generic.DetailView):
+
+class ResultsView(PublishedQuestionMixin, generic.DetailView):
     model = Question
     template_name = "polls/results.html"
 
-
 def vote(request, question_id):
-    question = get_object_or_404(Question, pk=question_id)
+    question = get_object_or_404(
+        Question,
+        pk=question_id,
+        pub_date__lte=timezone.now(),
+    )
 
     choice_id = request.POST.get("choice")
     if not choice_id:
@@ -46,7 +49,7 @@ def vote(request, question_id):
 
     try:
         selected_choice = question.choices.get(pk=choice_id)
-    except (ValueError, Choice.DoesNotExist):
+    except (Choice.DoesNotExist):
         return render(
             request,
             "polls/detail.html",

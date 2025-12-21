@@ -28,3 +28,7 @@ def new_search(request):
             "final_postings": final_postings,
         },
     )
+
+def not_found(request, exception):
+    print("404 error handler called")
+    return render(request, "not_found.html", status=404)

@@ -1,0 +1,28 @@
+[project]
+name = "mysite"
+version = "0.1.0"
+description = "Django polls project"
+readme = "README.md"
+requires-python = ">=3.11"
+
+dependencies = [
+    "Django>=4.2,<6.0",
+    "python-dotenv>=1.0",
+    "whitenoise>=6.11",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=24.0",
+    "isort>=5.13",
+]
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+
+[tool.isort]
+profile = "black"
+
+[tool.django-stubs]
+django_settings_module = "mysite.settings"

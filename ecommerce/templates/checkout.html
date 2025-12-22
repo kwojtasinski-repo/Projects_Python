@@ -18,12 +18,6 @@
           <!-- Card -->
           <div class="card">
 
-            {% comment %}<form>
-              {% csrf_token %}
-              {{ form|crispy }}
-              <button class="btn btn-primary" type="submit">Checkout</button>
-            </form>{% endcomment %}
-
             <!-- Card content -->
             <form  method="POST" class="card-body">
             {% csrf_token %}
@@ -34,16 +28,12 @@
                 <div class="md-form-mb-5 ">
                   <label for="shipping_address" class="">Address</label>
                   <input placeholder="1234 ulica" type="text" id="shipping_address" name="shipping_address" class="form-control"/>
-                  {% comment %}<input type="text" id="address" class="form-control" placeholder="1234 ulica">{% endcomment %}
-                  {% comment %}{{ form.street_address }}{% endcomment %}
                 </div>
 
                 <!-- address2 -->
                 <div class="md-form-mb-5">
                   <label for="shipping_address2" class="">Address 2 (optional)</label>
                   <input type="text" placeholder="Apartment or suite" id="shipping_address2" name="shipping_address2" class="form-control"/>
-                  {% comment %}<input type="text" id="address-2" class="form-control" placeholder="Apartment or suit">{% endcomment %}
-                  {% comment %}{{ form.apartment_address }}{% endcomment %}
                 </div>
 
                 <!-- Grid row -->
@@ -53,10 +43,6 @@
                   <div class="col-lg-4 col-md-12 mb-4">
 
                     <label for="country">Country</label>
-                    {% comment %}<select class="custom-select d-block w-100" id="country" required>
-                      <option value="">Choose...</option>
-                      <option>United States</option>
-                    </select> {% endcomment %}
                     {{ form.shipping_country }}
                     <div class="invalid-feedback">
                       Please select a valid country.
@@ -66,7 +52,6 @@
                   <div class="col-lg-4 col-md-6 mb-4">
                       <label for="shipping_city">City</label>
                       <input type="text" placeholder="City" id="shipping_city" name="shipping_city" class="form-control"/>
-                      {% comment %}<input type='text' placeholder="" id="city" class='form-control' required> {% endcomment %}
                       {{ form.city }}
                       <div class="invalid-feedback">
                         City required.
@@ -76,7 +61,6 @@
                   <div class="col-lg-4 col-md-6 mb-4">
                       <label for="shipping_zip">Zip</label>
                       <input type="text" placeholder="Zip code" id="shipping_zip" name="shipping_zip" class="form-control"/>
-                      {% comment %}<input type='text' placeholder='Zip code' id='shipping_zip' name='shipping_zip' class='form-control' /> {% endcomment %}
                       {{ form.zip }}
                       <div class="invalid-feedback">
                         Zip code required.
@@ -89,12 +73,10 @@
 
                 <div class="custom-control custom-checkbox">
                   <input type="checkbox" class="custom-control-input" name="same_billing_address" id="same_billing_address">
-                  {% comment %}{{ form.same_billing_address }}{% endcomment %}
                   <label class="custom-control-label" for="same_billing_address">Billing address is the same as my shipping address</label>
               </div>
               <div class="custom-control custom-checkbox">
                 <input  type="checkbox" class="custom-control-input" name="set_default_shipping" id="set_default_shipping">
-                {% comment %}{{ form.save_info }}{% endcomment %}
                 <label class="custom-control-label" for="set_default_shipping">Save as default shipping address</label>
               </div>
 
@@ -115,15 +97,12 @@
                 <div class="md-form-mb-5">
                   <label for="billing_address" class="">Address</label>
                   <input type='text' placeholder='1234 Main St' id='billing_address' name='billing_address' class='form-control' />
-                  {% comment %}<input type="text" id="address" class="form-control" placeholder="1234 ulica">{% endcomment %}
                 </div>
 
                 <!-- address2 -->
                 <div class="md-form-mb-5">
                   <label for="billing_address2" class="">Address 2 (optional)</label>
                   <input type='text' placeholder='Apartment or suite' id='billing_address2' name='billing_address2' class='form-control' />
-                  {% comment %}<input type="text" id="address-2" class="form-control" placeholder="Apartment or suit">{% endcomment %}
-                  {% comment %}{{ form.apartment_address }}{% endcomment %}
                 </div>
 
                 <!-- Grid row -->
@@ -132,10 +111,6 @@
                   <!-- Grid column -->
                  <div class="col-lg-4 col-md-12 mb-4">
                     <label for="country">Country</label>
-                    {% comment %}<select class="custom-select d-block w-100" id="country" required>
-                      <option value="">Choose...</option>
-                      <option>United States</option>
-                    </select> {% endcomment %}
                     {{ form.billing_country }}
                     <div class="invalid-feedback">
                       Please select a valid country.
@@ -145,8 +120,6 @@
                   <div class="col-lg-4 col-md-6 mb-4">
                       <label for="billing_city">City</label>
                       <input type="text" placeholder="City" id="billing_city" name="billing_city" class="form-control"/>
-                      {% comment %}<input type='text' placeholder="" id="city" class='form-control' required> {% endcomment %}
-                      {% comment %}{{ form.city }}{% endcomment %}
                       <div class="invalid-feedback">
                         City required.
                       </div>
@@ -155,8 +128,6 @@
                   <div class="col-lg-4 col-md-6 mb-4">
                     <label for="billing_zip">Zip</label>
                     <input type='text' placeholder='Zip code' id='billing_zip' name='billing_zip' class='form-control' />
-                      {% comment %}<input type='text' placeholder='Zip code' id='shipping_zip' name='shipping_zip' class='form-control' /> {% endcomment %}
-                      {% comment %}{{ form.zip }}{% endcomment %}
                       <div class="invalid-feedback">
                       Zip code required.
                     </div>
@@ -191,17 +162,8 @@
                 <div class="custom-control custom-radio">
                   <input id="{{ name }}" name="payment_option" value="{{ value }}" type="radio" class="custom-control-input" required>
                   <label class="custom-control-label" for="{{ name }}">{{ name }}</label>
-                  {% comment %}{{ form.payment_option }}{% endcomment %}
                 </div>
                 {% endfor %}
-                {% comment %}<div class="custom-control custom-radio">
-                  <input id="debit" name="paymentMethod" type="radio" class="custom-control-input">
-                  <label class="custom-control-label" for="debit">Debit card</label>
-                </div>
-                <div class="custom-control custom-radio">
-                  <input id="paypal" name="paymentMethod" type="radio" class="custom-control-input">
-                  <label class="custom-control-label" for="paypal">Paypal</label>
-                </div>{% endcomment %}
               </div>
 
               <hr class="mb-4">

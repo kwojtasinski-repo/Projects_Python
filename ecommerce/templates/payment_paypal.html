@@ -143,6 +143,7 @@ button:hover {
             <script>
                 var CREATE_PAYMENT_URL  = 'http://127.0.0.1:8000/payment/reqfe/paypal/payment';
                 var EXECUTE_PAYMENT_URL = 'http://127.0.0.1:8000/payment/reqfe/paypal/execute';
+                const csrfToken = '{{ csrf_token }}';
 
                 paypal.Button.render({
 
@@ -151,7 +152,11 @@ button:hover {
                     commit: true, // Show a 'Pay Now' button
 
                     payment: function() {
-                        return paypal.request.post(CREATE_PAYMENT_URL).then(function(data) {
+                        return paypal.request.post(CREATE_PAYMENT_URL, {}, {
+                          headers: {
+                            'X-CSRFToken': csrfToken
+                          }
+                        }).then(function(data) {
                             return data.paymentID;
                         });
                     },

@@ -499,8 +499,7 @@ class Payment_Paypal(View):
             return redirect("core:checkout")
 
 @app.route('/payment/reqfe/paypal/payment', methods=['POST'])
-def payment():
-
+def payment(request, obj=None):
     payment = paypalrestsdk.Payment({
         "intent": "sale",
         "payer": {
@@ -508,7 +507,7 @@ def payment():
         "redirect_urls": {
             "return_url": "http://localhost:8000/",
             "cancel_url": "http://localhost:8000/payment/reqfe/paypal/"},
-            "przedmioty": paypalrestsdk.context}
+            "items": paypalrestsdk.context}
         )
 
     if payment.create():

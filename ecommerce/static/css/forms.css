@@ -1,0 +1,13 @@
+.country-select-wrapper {
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+}
+
+.country-select-wrapper select {
+    flex: 1;
+}
+
+.country-select-wrapper img.country-select-flag {
+    margin-left: 6px;
+}

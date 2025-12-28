@@ -4,12 +4,12 @@
   {{ field }}
   
   {% if field.errors %}
-    {# 
+    <!--
       NOTE:
       Inline JS here is intentional.
       This partial must be self-contained and reusable.
       JS only runs when field has errors.
-    #}
+    -->
     <script>
       (function () {
         const countryElement = document.getElementById('{{ field.id_for_label }}');

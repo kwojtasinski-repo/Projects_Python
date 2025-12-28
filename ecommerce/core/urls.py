@@ -10,8 +10,8 @@ from .views import (
     PaymentView,
     AddCouponView,
     RequestRefundView,
-    Payment_Paypal,
-    payment
+    PaypalCreatePaymentView,
+    PaypalExecutePaymentView,
 )
 
 app_name = 'core'
@@ -35,7 +35,7 @@ urlpatterns = [
     # Payment
     path('payment/<payment_option>/', PaymentView.as_view(), name='payment'),
 
-    # LEGACY — Paypal (to remove later)
-    path('payment/reqfe/<payment_option>/', Payment_Paypal.as_view(), name='payment-paypal'),
-    path('payment/reqfe/paypal/payment', payment, name='payment-paypal')
+    # Paypal
+    path("payment/paypal/create/", PaypalCreatePaymentView.as_view(), name="paypal-create"),
+    path("payment/paypal/execute/", PaypalExecutePaymentView.as_view(), name="paypal-execute"),
 ]

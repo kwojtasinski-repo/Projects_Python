@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Item, Order, OrderItem, Address, Payment, Coupon, Refund, UserProfile
 from .forms import CheckoutForm, CouponForm, RefundForm, PaymentForm
@@ -12,17 +13,13 @@ import stripe
 stripe.api_key = settings.STRIPE_SECRET_KEY
 import random
 import string
-from flask import Flask, jsonify, request
 from .services.checkout import handle_addresses
-import paypalrestsdk
-app = Flask(__name__)
+from .services.paypal import (
+    execute_payment,
+    create_payment
+)
 
 # Create your views here.
-
-paypalrestsdk.configure({
-  "mode": "sandbox", # sandbox or live
-  "client_id": "CLIENT_ID",
-  "client_secret": "CLIENT_SECRET" })
 
 def create_ref_code():
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
@@ -104,8 +101,9 @@ class CheckoutView(View):
 
 class PaymentView(View):
     def get(self, *args, **kwargs):
-        #order
         order = Order.objects.get(user=self.request.user, ordered = False)
+        method = self.kwargs.get('payment_option').lower()
+        print(method)
         if order.billing_address:
             context = {
                 'order': order,
@@ -127,7 +125,11 @@ class PaymentView(View):
                             'card': card_list[0]
                         }
                     )
-            return render(self.request, "payment.html", context)
+            
+            if method == 'stripe':
+                return render(self.request, "payment.html", context)
+            elif method == 'paypal':
+                return render(self.request, "payment_paypal.html", context)
         else:
             print(order)
             messages.warning(self.request, "You have not added the billing address")
@@ -378,51 +380,27 @@ class RequestRefundView(View):
                 messages.info(self.request, "This order does not exists.")
                 return redirect("core:request-refund")
 
-class Payment_Paypal(View):
-    def get(self, *args, **kwargs):
-        #order
-        order = Order.objects.get(user=self.request.user, ordered = False)
-        if order.billing_address:
-            context = {
-                'order': order,
-                'DISPLAY_COUPON_FORM': False
-            }
-            return render(self.request, "payment_paypal.html", context)
-        else:
-            print(order)
-            messages.warning(self.request, "You have not added the billing address")
-            return redirect("core:checkout")
+class PaypalCreatePaymentView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        order = Order.objects.get(user=request.user, ordered=False)
 
-@app.route('/payment/reqfe/paypal/payment', methods=['POST'])
-def payment(request, obj=None):
-    payment = paypalrestsdk.Payment({
-        "intent": "sale",
-        "payer": {
-            "payment_method": "paypal"},
-        "redirect_urls": {
-            "return_url": "http://localhost:8000/",
-            "cancel_url": "http://localhost:8000/payment/reqfe/paypal/"},
-            "items": paypalrestsdk.context}
+        payment = create_payment(order)
+
+        approval_url = next(
+            link.href for link in payment.links if link.rel == "approval_url"
         )
 
-    if payment.create():
-        print('Payment success!')
-    else:
-        print(payment.error)
+        return JsonResponse({
+            "paymentID": payment.id,
+            "approval_url": approval_url,
+        })
 
-    return jsonify({'paymentID' : payment.id})
 
-@app.route('/payment/reqfe/paypal/execute', methods=['POST'])
-def execute():
-    success = False
+class PaypalExecutePaymentView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        payment_id = request.POST.get("paymentID")
+        payer_id = request.POST.get("payerID")
 
-    payment = paypalrestsdk.Payment.find(request.form['paymentID'])
+        execute_payment(payment_id, payer_id)
 
-    if payment.execute({'payer_id' : request.form['payerID']}):
-        print('Execute success!')
-        success = True
-    else:
-        print(payment.error)
-
-    return jsonify({'success' : success})
-
+        return JsonResponse({"success": True})

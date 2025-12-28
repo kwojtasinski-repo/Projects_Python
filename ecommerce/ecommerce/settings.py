@@ -6,6 +6,11 @@ DEBUG = True
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '-05sgp9!deq=q1nltm@^^2cc+v29i(tyybv3v2t77qi66czazj'
 STRIPE_SECRET_KEY = 'sk_test_4eC39HqLyjWDarjtT1zdp7dc'
+PAYPAL_MODE = 'sandbox'
+PAYPAL_CLIENT_ID = 'CLIENT_ID'
+PAYPAL_CLIENT_SECRET = 'CLIENT_SECRET'
+PAYPAL_RETURN_URL = 'http://localhost:8000/payment/paypal/execute/'
+PAYPAL_CANCEL_URL = 'http://localhost:8000/'
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [

@@ -28,6 +28,43 @@ class CheckoutForm(forms.Form):
 
     payment_option = forms.ChoiceField(widget=forms.RadioSelect, choices=PAYMENT_CHOICES)
 
+    def clean(self):
+        cleaned_data = super().clean()
+
+        use_default_shipping = cleaned_data.get('use_default_shipping')
+        use_default_billing = cleaned_data.get('use_default_billing')
+        same_billing = cleaned_data.get('same_billing_address')
+
+        shipping_address = cleaned_data.get('shipping_address')
+        shipping_country = cleaned_data.get('shipping_country')
+        shipping_zip = cleaned_data.get('shipping_zip')
+        shipping_city = cleaned_data.get('shipping_city')
+
+        billing_address = cleaned_data.get('billing_address')
+        billing_country = cleaned_data.get('billing_country')
+        billing_zip = cleaned_data.get('billing_zip')
+        billing_city = cleaned_data.get('billing_city')
+
+        payment_option = cleaned_data.get('payment_option')
+
+        # 1️⃣ Shipping validation
+        if not use_default_shipping:
+            if not all([shipping_address, shipping_country, shipping_zip, shipping_city]):
+                raise forms.ValidationError(
+                    "Please complete the shipping address."
+                )
+
+        # 2️⃣ Billing validation
+        if not same_billing and not use_default_billing:
+            if not all([billing_address, billing_country, billing_zip, billing_city]):
+                raise forms.ValidationError(
+                    "Please complete the billing address."
+                )
+
+        # 3️⃣ Payment option sanity check
+        if payment_option not in dict(PAYMENT_CHOICES):
+            raise forms.ValidationError("Invalid payment option.")
+
 class CouponForm(forms.Form):
     # bierze dane z formularza order_snippet po klasie form-control i placeholder itd
     code=forms.CharField(widget=forms.TextInput(attrs={

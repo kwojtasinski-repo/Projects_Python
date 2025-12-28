@@ -73,9 +73,6 @@ class CheckoutView(View):
             messages.info(self.request, "You do not have an active order")
             return redirect("core:checkout")
 
-
-
-
     def post(self, *args, **kwargs):
         form = CheckoutForm(self.request.POST or None)
         try:
@@ -201,6 +198,9 @@ class CheckoutView(View):
                 else:
                     messages.warning(self.request, "Invalid payment option selected")
                     return redirect('core:checkout')
+            else:
+                messages.warning(self.request, "Form is invalid")
+                return redirect('core:checkout')
 
         except ObjectDoesNotExist:
             messages.warning(self.request, "You do not have an active order")

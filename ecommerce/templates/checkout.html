@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
+{% load static %}
 
   <main>
 
@@ -125,109 +126,111 @@
                 <label class="custom-control-label" for="use_default_shipping">Use default shipping address: {{ default_shipping_address.street_address|truncatechars:10 }}</label>
               </div>
               {% endif %}
-              
+
               <hr>
               
-              <div class='hideable_billing_form'>
-
+              <div class='hideable_whole_billing_form'>
+                
                 <h3>Billing address</h3>
-
-                <div class="md-form mb-5">
-                  <label for="billing_address" class="">Address</label>
-                  <input type='text' placeholder='1234 Main St' id='billing_address' name='billing_address' class='form-control' />
-                  {% for error in form.billing_address.errors %}
-                    <div class="invalid-feedback d-block">
-                      {{ error }}
-                    </div>
-                  {% endfor %}
-                </div>
-
-                <!-- address2 -->
-                <div class="md-form mb-5">
-                  <label for="billing_address2" class="">Address 2 (optional)</label>
-                  <input
-                    type="text"
-                    id="billing_address2"
-                    name="billing_address2"
-                    value="{{ form.billing_address2.value|default_if_none:'' }}"
-                    class="form-control"
-                  />
-                </div>
-
-                <!-- Grid row -->
-                <div class="row">
-
-                  <!-- Grid column -->
-                  <div class="col-lg-4 col-md-12 mb-4">
-                    {% include "partials/country_field.html" with field=form.billing_country label="Country" %}
-                  </div>
-                  <!-- Grid column -->
-                  <div class="col-lg-4 col-md-6 mb-4">
-                      <label for="billing_city">City</label>
-                      <input
-                        type="text"
-                        placeholder='City'
-                        id="billing_city"
-                        name="billing_city"
-                        value="{{ form.billing_city.value|default_if_none:'' }}"
-                        class="form-control {% if form.billing_city.errors %}is-invalid{% endif %}"
-                      />
-                      {% for error in form.billing_city.errors %}
-                        <div class="invalid-feedback d-block">
-                          {{ error }}
-                        </div>
-                      {% endfor %}
-                  </div>
-                  <!-- Grid column -->
-                  <div class="col-lg-4 col-md-6 mb-4">
-                    <label for="billing_zip">Zip</label>
-                    <input
-                      type='text'
-                      name="billing_zip"
-                      placeholder='Zip code'
-                      id='billing_zip'
-                      value="{{ form.billing_zip.value|default_if_none:'' }}"
-                      class="form-control {% if form.billing_zip.errors %}is-invalid{% endif %}"
-                    />
-                    {% for error in form.billing_zip.errors %}
+                <div class='hideable_billing_form'>
+                  <div class="md-form mb-5">
+                    <label for="billing_address" class="">Address</label>
+                    <input type='text' placeholder='1234 Main St' id='billing_address' name='billing_address' class='form-control' />
+                    {% for error in form.billing_address.errors %}
                       <div class="invalid-feedback d-block">
                         {{ error }}
                       </div>
                     {% endfor %}
                   </div>
 
-                  <!-- Grid column -->
+                  <!-- address2 -->
+                  <div class="md-form mb-5">
+                    <label for="billing_address2" class="">Address 2 (optional)</label>
+                    <input
+                      type="text"
+                      id="billing_address2"
+                      name="billing_address2"
+                      value="{{ form.billing_address2.value|default_if_none:'' }}"
+                      class="form-control"
+                    />
+                  </div>
 
-                </div>
-                <!-- Grid row -->
+                  <!-- Grid row -->
+                  <div class="row">
 
-                <div class="custom-control custom-checkbox">
-                  <input
-                    type="checkbox"
-                    class="custom-control-input"
-                    name="set_default_billing"
-                    id="set_default_billing"
-                    {% if form.set_default_billing.value %}checked{% endif %}
-                  >
-                  <label class="custom-control-label" for="set_default_billing">Save as default billing address</label>
+                    <!-- Grid column -->
+                    <div class="col-lg-4 col-md-12 mb-4">
+                      {% include "partials/country_field.html" with field=form.billing_country label="Country" %}
+                    </div>
+                    <!-- Grid column -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <label for="billing_city">City</label>
+                        <input
+                          type="text"
+                          placeholder='City'
+                          id="billing_city"
+                          name="billing_city"
+                          value="{{ form.billing_city.value|default_if_none:'' }}"
+                          class="form-control {% if form.billing_city.errors %}is-invalid{% endif %}"
+                        />
+                        {% for error in form.billing_city.errors %}
+                          <div class="invalid-feedback d-block">
+                            {{ error }}
+                          </div>
+                        {% endfor %}
+                    </div>
+                    <!-- Grid column -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                      <label for="billing_zip">Zip</label>
+                      <input
+                        type='text'
+                        name="billing_zip"
+                        placeholder='Zip code'
+                        id='billing_zip'
+                        value="{{ form.billing_zip.value|default_if_none:'' }}"
+                        class="form-control {% if form.billing_zip.errors %}is-invalid{% endif %}"
+                      />
+                      {% for error in form.billing_zip.errors %}
+                        <div class="invalid-feedback d-block">
+                          {{ error }}
+                        </div>
+                      {% endfor %}
+                    </div>
+
+                    <!-- Grid column -->
+
+                  </div>
+                  <!-- Grid row -->
+
+                  <div class="custom-control custom-checkbox">
+                    <input
+                      type="checkbox"
+                      class="custom-control-input"
+                      name="set_default_billing"
+                      id="set_default_billing"
+                      {% if form.set_default_billing.value %}checked{% endif %}
+                    >
+                    <label class="custom-control-label" for="set_default_billing">Save as default billing address</label>
+                  </div>
                 </div>
 
                 {% if default_billing_address %}
                 <div class="custom-control custom-checkbox">
                   <input
-                    type="checkbox"
-                    class="custom-control-input"
-                    name="use_default_billing"
-                    id="use_default_billing"
-                    {% if form.use_default_billing.value %}checked{% endif %}
+                  type="checkbox"
+                  class="custom-control-input"
+                  name="use_default_billing"
+                  id="use_default_billing"
+                  {% if form.use_default_billing.value %}checked{% endif %}
                   >
                   <label class="custom-control-label" for="use_default_billing">Use default billing address: {{ default_billing_address.street_address|truncatechars:10 }}</label>
                 </div>
                 {% endif %}
 
                 <hr>
-              </div>
 
+              </div>
+              
               <h3>Payment option</h3>
 
               <div class="d-block my-3">
@@ -270,52 +273,5 @@
 {% endblock content %}
 
 {% block extra_scripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-
-  if (typeof window.jQuery === 'undefined') {
-    console.warn('jQuery not loaded – checkout toggle disabled');
-    return;
-  }
-
-  var hideableShipping = $('.hideable_shipping_form');
-  var hideableBilling = $('.hideable_billing_form');
-
-  var useDefaultShipping = document.querySelector("input[name=use_default_shipping]");
-  var useDefaultBilling = document.querySelector("input[name=use_default_billing]");
-  var sameBilling = document.querySelector("input[name=same_billing_address]");
-
-  if (useDefaultShipping) {
-    useDefaultShipping.addEventListener('change', function () {
-      this.checked ? hideableShipping.hide() : hideableShipping.show();
-    });
-
-    // initial state
-    if (useDefaultShipping.checked) {
-      hideableShipping.hide();
-    }
-  }
-
-  if (useDefaultBilling) {
-    useDefaultBilling.addEventListener('change', function () {
-      this.checked ? hideableBilling.hide() : hideableBilling.show();
-    });
-
-    // initial state
-    if (useDefaultBilling.checked) {
-      hideableBilling.hide();
-    }
-  }
-
-  if (sameBilling) {
-    sameBilling.addEventListener('change', function () {
-      this.checked ? hideableBilling.hide() : hideableBilling.show();
-    });
-
-    if (sameBilling.checked) {
-      hideableBilling.hide();
-    }
-  }
-});
-</script>
+<script type="text/javascript" src="{% static 'js/checkout.js' %}"></script>
 {% endblock extra_scripts %}

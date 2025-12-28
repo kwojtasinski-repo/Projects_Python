@@ -57,29 +57,7 @@
 
                   <!-- Grid column -->
                   <div class="col-lg-4 col-md-12 mb-4">
-                    <label for="{{ form.shipping_country.id_for_label }}">Country</label>
-                    <div class="country-select-wrapper">
-                      {{ form.shipping_country }}
-                      {% if form.shipping_country.errors %}
-                        <script>
-                          (function () {
-                            var el = document.getElementById('{{ form.shipping_country.id_for_label }}');
-                            if (!el) return;
-
-                            el.classList.add('is-invalid');
-                            el.setAttribute(
-                              'aria-describedby',
-                              '{{ form.shipping_country.id_for_label }}_error'
-                            );
-                          })();
-                        </script>
-                      {% endif %}
-                    </div>
-                    {% if form.shipping_country.errors %}
-                      <div class="invalid-feedback d-block">
-                        {{ form.shipping_country.errors.0 }}
-                      </div>
-                    {% endif %}
+                    {% include "partials/country_field.html" with field=form.shipping_country label="Country" %}
                   </div>
                   <!-- Grid column -->
                   <div class="col-lg-4 col-md-6 mb-4">
@@ -180,30 +158,8 @@
                 <div class="row">
 
                   <!-- Grid column -->
-                 <div class="col-lg-4 col-md-12 mb-4">
-                    <label for="{{ form.billing_country.id_for_label }}">Country</label>
-                    <div class="country-select-wrapper">
-                      {{ form.billing_country }}
-                      {% if form.billing_country.errors %}
-                        <script>
-                          (function () {
-                            var el = document.getElementById('{{ form.billing_country.id_for_label }}');
-                            if (!el) return;
-
-                            el.classList.add('is-invalid');
-                            el.setAttribute(
-                              'aria-describedby',
-                              '{{ form.billing_country.id_for_label }}_error'
-                            );
-                          })();
-                        </script>
-                      {% endif %}
-                    </div>
-                    {% if form.billing_country.errors %}
-                      <div class="invalid-feedback d-block">
-                        {{ form.billing_country.errors.0 }}
-                      </div>
-                    {% endif %}
+                  <div class="col-lg-4 col-md-12 mb-4">
+                    {% include "partials/country_field.html" with field=form.billing_country label="Country" %}
                   </div>
                   <!-- Grid column -->
                   <div class="col-lg-4 col-md-6 mb-4">

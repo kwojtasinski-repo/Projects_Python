@@ -47,7 +47,7 @@ class CheckoutView(View):
     def get(self, *args, **kwargs):
         try:
             order = Order.objects.get(user=self.request.user, ordered = False)
-            form = CheckoutForm({})
+            form = CheckoutForm()
 
             context = {'form': form,
                        'couponform': CouponForm(),

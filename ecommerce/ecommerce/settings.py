@@ -27,9 +27,17 @@ STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
 PAYPAL_MODE = os.getenv("PAYPAL_MODE", "sandbox")
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "")
 PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET", "")
-PAYPAL_RETURN_URL = 'http://localhost:8000/payment/paypal/execute/'
-PAYPAL_CANCEL_URL = 'http://localhost:8000/'
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",") if not DEBUG else []
+PAYPAL_RETURN_URL = (
+    APP_CONFIG.get("paypal", {}).get("return_url")
+)
+PAYPAL_CANCEL_URL = (
+    APP_CONFIG.get("paypal", {}).get("cancel_url")
+)
+ALLOWED_HOSTS = (
+    os.getenv("ALLOWED_HOSTS", "").split(",")
+    if not DEBUG
+    else ["localhost", "127.0.0.1"]
+)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -130,7 +138,7 @@ LOGGING = {
     },
     "root": {
         "handlers": ["console"],
-        "level": "INFO",
+        "level": "DEBUG" if DEBUG else "INFO",
     },
 }
 

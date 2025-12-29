@@ -1,0 +1,6 @@
+[checkout]
+currency = "USD"
+
+[paypal]
+return_url = "http://localhost:8000/payment/paypal/execute/"
+cancel_url = "http://localhost:8000/"

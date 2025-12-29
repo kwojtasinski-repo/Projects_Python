@@ -1,17 +1,35 @@
+from pathlib import Path
 import os
+from dotenv import load_dotenv
+import tomllib
 
-ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
+load_dotenv()
 
-DEBUG = True
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SECRET_KEY = '-05sgp9!deq=q1nltm@^^2cc+v29i(tyybv3v2t77qi66czazj'
-STRIPE_SECRET_KEY = 'sk_test_4eC39HqLyjWDarjtT1zdp7dc'
-PAYPAL_MODE = 'sandbox'
-PAYPAL_CLIENT_ID = 'CLIENT_ID'
-PAYPAL_CLIENT_SECRET = 'CLIENT_SECRET'
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+CONFIG_PATH = BASE_DIR / "config.toml"
+
+if CONFIG_PATH.exists():
+    with open(CONFIG_PATH, "rb") as f:
+        APP_CONFIG = tomllib.load(f)
+else:
+    APP_CONFIG = {}
+
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
+DEBUG = os.getenv("DEBUG", "1") == "1"
+
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "insecure-dev-key"
+)
+
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
+PAYPAL_MODE = os.getenv("PAYPAL_MODE", "sandbox")
+PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "")
+PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET", "")
 PAYPAL_RETURN_URL = 'http://localhost:8000/payment/paypal/execute/'
 PAYPAL_CANCEL_URL = 'http://localhost:8000/'
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",") if not DEBUG else []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -73,6 +91,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root')
 
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -100,6 +120,20 @@ LOGIN_REDIRECT_URL = '/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+}
+
 if ENVIRONMENT == 'production':
     DEBUG = False
     SECRET_KEY = os.getenv('SECRET_KEY')
@@ -108,6 +142,8 @@ if ENVIRONMENT == 'production':
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_SECONDS = 31536000
-    SECURE_REDIRECT_EXEMPT = []
+    SECURE_HSTS_PRELOAD = True
     SECURE_SSL_REDIRECT = True
+    SECURE_REDIRECT_EXEMPT = []
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+

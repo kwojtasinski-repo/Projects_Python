@@ -6,6 +6,7 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
+    # TODO: login by social accounts is behind Feature Switch
     path('', include('core.urls', namespace="core"))
 ]
 

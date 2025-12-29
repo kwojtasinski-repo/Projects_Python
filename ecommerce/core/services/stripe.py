@@ -26,13 +26,13 @@ def charge_customer(order, user, token=None, customer=None):
     if customer:
         charge = stripe.Charge.create(
             amount=amount,
-            currency=settings.APP_CONFIG.get("checkout", {}).get("currency", "USD"),
+            currency="usd",
             customer=customer.id
         )
     else:
         charge = stripe.Charge.create(
             amount=amount,
-            currency=settings.APP_CONFIG.get("checkout", {}).get("currency", "USD"),
+            currency="usd",
             source=token
         )
 

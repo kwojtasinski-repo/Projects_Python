@@ -18,7 +18,7 @@ def create_payment(order):
         "transactions": [{
             "amount": {
                 "total": f"{order.get_total():.2f}",
-                "currency": settings.APP_CONFIG.get("checkout", {}).get("currency", "USD"),
+                "currency": "USD",
             },
             "description": f"Order #{order.id}",
         }]

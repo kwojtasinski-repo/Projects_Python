@@ -1,19 +1,13 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-import tomllib
 
 load_dotenv()
 
+def env_bool(name: str, default: bool = False) -> bool:
+    return os.getenv(name, "1" if default else "0") == "1"
+
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-CONFIG_PATH = BASE_DIR / "config.toml"
-
-if CONFIG_PATH.exists():
-    with open(CONFIG_PATH, "rb") as f:
-        APP_CONFIG = tomllib.load(f)
-else:
-    APP_CONFIG = {}
 
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 DEBUG = os.getenv("DEBUG", "1") == "1"
@@ -27,12 +21,8 @@ STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
 PAYPAL_MODE = os.getenv("PAYPAL_MODE", "sandbox")
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "")
 PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET", "")
-PAYPAL_RETURN_URL = (
-    APP_CONFIG.get("paypal", {}).get("return_url")
-)
-PAYPAL_CANCEL_URL = (
-    APP_CONFIG.get("paypal", {}).get("cancel_url")
-)
+PAYPAL_RETURN_URL = os.getenv("PAYPAL_RETURN_URL", "http://localhost:8000/payment/paypal/execute/")
+PAYPAL_CANCEL_URL = os.getenv("PAYPAL_CANCEL_URL", "http://localhost:8000/")
 ALLOWED_HOSTS = (
     os.getenv("ALLOWED_HOSTS", "").split(",")
     if not DEBUG
@@ -74,7 +64,7 @@ ROOT_URLCONF = 'ecommerce.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        "DIRS": [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -94,17 +84,22 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
+
+if DEBUG:
+    STATICFILES_DIRS = [BASE_DIR / "static"]
+else:
+    STATICFILES_DIRS = []
+
+STATIC_ROOT = BASE_DIR / "static_root"
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root')
+MEDIA_ROOT = BASE_DIR / "media_root"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, 'db.sqlite3'),
+        "NAME": BASE_DIR / "db.sqlite3",
         "TEST": {
             "NAME": ":memory:",
         },
@@ -141,6 +136,8 @@ LOGGING = {
         "level": "DEBUG" if DEBUG else "INFO",
     },
 }
+
+FEATURE_SOCIAL_LOGIN = env_bool("FEATURE_SOCIAL_LOGIN", False)
 
 if ENVIRONMENT == 'production':
     DEBUG = False

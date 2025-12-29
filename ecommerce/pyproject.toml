@@ -1,0 +1,38 @@
+[project]
+name = "ecommerce"
+version = "0.1.0"
+description = "Django e-commerce project"
+requires-python = ">=3.11"
+
+dependencies = [
+    "Django>=5.2,<6.0",
+    "django-allauth>=0.61",
+    "django-crispy-forms>=2.1",
+    "crispy-bootstrap4>=2024.1",
+    "django-countries>=7.5",
+    "stripe>=9.0",
+    "paypalrestsdk>=1.13.3",
+    "python-dotenv>=1.0",
+    "Pillow>=10.0",
+    "requests>=2.31",
+]
+
+[tool.setuptools]
+packages = ["core"]
+
+[tool.setuptools.package-data]
+core = ["templates/**", "static/**"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-django",
+    "coverage",
+    "black",
+    "ruff",
+    "mypy",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "ecommerce.settings"
+python_files = ["test_*.py"]

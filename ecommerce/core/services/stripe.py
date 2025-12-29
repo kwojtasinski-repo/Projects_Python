@@ -1,6 +1,6 @@
 import stripe
 from django.conf import settings
-from core.models import Payment
+from core.models import Payment, Order, UserProfile
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -38,15 +38,16 @@ def charge_customer(order, user, token=None, customer=None):
 
     return charge
 
+
 def process_stripe_payment(
     *,
-    order,
+    order: Order,
     user,
-    userprofile,
-    token,
-    save_card=False,
-    use_default=False
-):
+    userprofile: UserProfile,
+    token: str | None,
+    save_card: bool = False,
+    use_default: bool = False,
+) -> Payment:
     customer = None
 
     if save_card or use_default:

@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -9,8 +8,6 @@ from .models import Item, Order, OrderItem, Address, Payment, Coupon, Refund, Us
 from .forms import CheckoutForm, CouponForm, RefundForm, PaymentForm
 from django.views.generic import ListView, DetailView, View
 from django.utils import timezone
-import random
-import string
 import stripe
 from .services.checkout import handle_addresses
 from .services.paypal import (
@@ -20,25 +17,6 @@ from .services.paypal import (
 from core.services.stripe import process_stripe_payment
 
 # Create your views here.
-
-def create_ref_code():
-    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
-
-
-def products(request):
-    context = {
-        'items': Item.objects.all()
-    }
-    return render(request, "product-page.html", context)
-
-# pomocnicza metoda do sprawdzenia form
-def is_valid_form(values):
-    valid = True
-    for field in values:
-        if field == '':
-            valid = False
-    return valid
-
 
 class CheckoutView(View):
     def get(self, *args, **kwargs):

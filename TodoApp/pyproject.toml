@@ -13,6 +13,14 @@ warn_redundant_casts = true
 warn_unused_ignores = true
 warn_return_any = false
 
+dependencies = [
+    "Django>=5.2,<6.0",
+    "black>=25.11.0",
+    "isort>=7.0.0",
+    "mypy>=1.18.2"
+]
+
 exclude = [
     ".*/migrations/.*"
 ]
+

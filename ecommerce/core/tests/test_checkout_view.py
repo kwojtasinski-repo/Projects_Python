@@ -53,3 +53,13 @@ class CheckoutViewTests(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertIn("/payment/stripe/", response.url)
+
+    def test_checkout_without_order_redirects(self):
+        self.order.delete()
+
+        response = self.client.get(
+            reverse("core:checkout")
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/", response.url)

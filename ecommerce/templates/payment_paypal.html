@@ -1,13 +1,8 @@
 {% extends "base.html" %}
 {% load js_filters %}
+{% load static %}
 {% block extra_head %}
-<style>
-  button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 7px 14px rgba(50, 50, 93, .10), 0 3px 6px rgba(0, 0, 0, .08);
-    background-color: #43458b;
-  }
-</style>
+  <link href="{% static 'css/paypal.css' %}" rel="stylesheet">
 {% endblock extra_head %}
 
 {% block content %}

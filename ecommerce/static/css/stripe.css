@@ -1,0 +1,68 @@
+.stripe-form label {
+  font-weight: 600;
+  margin-bottom: .5rem;
+  display: block;
+  color: #32325d;
+}
+
+.btn-payment {
+  width: 100%;
+  height: 44px;
+  background: linear-gradient(135deg, #5469d4, #4353b3);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  transition: all .15s ease;
+}
+
+.btn-payment:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(67,83,179,.35);
+}
+
+.stripe-form {
+  padding: 5px 30px;
+}
+
+.card-errors {
+  height: 20px;
+  padding: 4px 0;
+  color: #fa755a;
+}
+
+.stripe-form-row {
+  width: 100%;
+  float: left;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.StripeElement {
+  box-sizing: border-box;
+  height: 40px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background-color: white;
+  box-shadow: 0 1px 3px 0 #e6ebf1;
+  -webkit-transition: box-shadow 150ms ease;
+  transition: box-shadow 150ms ease;
+}
+
+.StripeElement--focus {
+  box-shadow: 0 1px 3px 0 #cfd7df;
+}
+
+.StripeElement--invalid {
+  border-color: #fa755a;
+}
+
+.StripeElement--webkit-autofill {
+  background-color: #fefde5 !important;
+}
+
+.current-card-form {
+  display: none;
+}

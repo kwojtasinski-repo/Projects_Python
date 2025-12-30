@@ -1,0 +1,40 @@
+.country-select-wrapper {
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+}
+
+.country-select-wrapper select {
+    flex: 1;
+}
+
+.country-select-wrapper img.country-select-flag {
+    margin-left: 6px;
+}
+
+html,
+body,
+header,
+.carousel {
+    height: 60vh;
+}
+
+@media (max-width: 740px) {
+
+    html,
+    body,
+    header,
+    .carousel {
+        height: 100vh;
+    }
+}
+
+@media (min-width: 800px) and (max-width: 850px) {
+
+    html,
+    body,
+    header,
+    .carousel {
+        height: 100vh;
+    }
+}

@@ -359,17 +359,20 @@ class PaypalExecutePaymentView(LoginRequiredMixin, View):
             .filter(
                 provider=PROVIDER_PAYPAL,
                 provider_payment_id=payment_id,
-                status=STATUS_PENDING,
+                status=STATUS_PENDING
             )
             .first()
         )
 
-        if payment:
-            messages.info(request, "Payment is not paid.")
-            return redirect("/payment/paypal/")
+        if not payment:
+            messages.success(self.request, "Your order was successful!")
+            return redirect("/")
 
-        messages.success(self.request, "Your order was successful!")
-        return redirect("/")
+        if payment.user != request.user:
+            return redirect("/")
+
+        messages.info(request, "Payment is not paid.")
+        return redirect("/payment/paypal/")
 
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body.decode("utf-8"))

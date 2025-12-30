@@ -3,11 +3,11 @@ from core.models import Address
 def handle_addresses(order, user, data):
     # SHIPPING
     if data.get('use_default_shipping'):
-        shipping = Address.objects.get(
+        shipping = Address.objects.filter(
             user=user,
             address_type='S',
             default=True
-        )
+        ).first()
     else:
         shipping = Address.objects.create(
             user=user,
@@ -32,11 +32,11 @@ def handle_addresses(order, user, data):
             address_type='B'
         )
     elif data.get('use_default_billing'):
-        billing = Address.objects.get(
+        billing = Address.objects.filter(
             user=user,
             address_type='B',
             default=True
-        )
+        ).first()
     else:
         billing = Address.objects.create(
             user=user,

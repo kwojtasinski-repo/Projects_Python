@@ -47,7 +47,10 @@ INSTALLED_APPS = [
     'crispy_bootstrap4',
     'django_countries',
 
-    'core'
+    'core',
+    
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.github",
 ]
 
 MIDDLEWARE = [
@@ -119,8 +122,9 @@ AUTHENTICATION_BACKENDS = (
 )
 
 SITE_ID = 1
-
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+SOCIALACCOUNT_LOGIN_ON_GET = True
 
 # CRISPY FORMS
 

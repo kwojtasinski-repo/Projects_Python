@@ -49,9 +49,16 @@ class OrderAdmin(admin.ModelAdmin):
         "refund_requested",
         "refund_granted",
         "ordered_date",
+        'billing_address',
+        'shipping_address',
+        'coupon',
     )
 
-    list_display_links = ("id", "user")
+    list_display_links = [
+        'user',
+        'billing_address',
+        'shipping_address',
+    ]
 
     list_filter = (
         "ordered",

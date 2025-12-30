@@ -1,6 +1,7 @@
+from uuid import uuid4
 import stripe
 from django.conf import settings
-from core.models import Payment, Order, UserProfile
+from core.models import PROVIDER_STRIPE, STATUS_PAID, STATUS_PENDING, Payment, Order, UserProfile
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -48,6 +49,25 @@ def process_stripe_payment(
     save_card: bool = False,
     use_default: bool = False,
 ) -> Payment:
+    if not settings.PAYMENTS_ENABLED:
+        # DEV / MOCK PAYMENT
+        payment = Payment.objects.create(
+            order=order,
+            provider_payment_id=f"dev_charge_{uuid4().hex}",
+            user=user,
+            amount=order.get_total(),
+            provider=PROVIDER_STRIPE,
+            status=STATUS_PENDING,
+        )
+
+        payment.status = STATUS_PAID
+        payment.save(update_fields=["status"])
+        order.items.update(ordered=True)
+        order.ordered = True
+        order.save()
+
+        return payment
+
     customer = None
 
     if save_card or use_default:
@@ -66,15 +86,27 @@ def process_stripe_payment(
         customer=customer if use_default else None
     )
 
+    if charge["status"] != "succeeded":
+        raise ValueError("Stripe charge failed")
+
+    if charge["amount"] != int(order.get_total() * 100):
+        raise ValueError("Amount mismatch")
+
+    if charge["currency"] != "usd":
+        raise ValueError("Currency mismatch")
+
     payment = Payment.objects.create(
-        stripe_charge_id=charge["id"],
+        provider_payment_id=charge["id"],
         user=user,
-        amount=order.get_total()
+        amount=order.get_total(),
+        provider=PROVIDER_STRIPE,
+        status=STATUS_PENDING,
     )
 
+    payment.status = STATUS_PAID
+    payment.save(update_fields=["status"])
     order.items.update(ordered=True)
     order.ordered = True
-    order.payment = payment
     order.save()
 
     return payment

@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Item, Order, OrderItem, Address, Payment, Coupon, Refund, UserProfile
+from .models import PROVIDER_PAYPAL, STATUS_PAID, STATUS_PENDING, Item, Order, OrderItem, Address, Payment, Coupon, Refund, UserProfile
 from .forms import CheckoutForm, CouponForm, RefundForm, PaymentForm
 from django.views.generic import ListView, DetailView, View
 from django.utils import timezone
@@ -15,6 +15,9 @@ from .services.paypal import (
     create_payment
 )
 from core.services.stripe import process_stripe_payment
+from django.conf import settings
+from uuid import uuid4
+import json
 
 # Create your views here.
 
@@ -317,23 +320,98 @@ class PaypalCreatePaymentView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         order = Order.objects.get(user=request.user, ordered=False)
 
+        payment = Payment.objects.create(
+            order=order,
+            user=request.user,
+            provider=PROVIDER_PAYPAL,
+            provider_payment_id=f"pending_{uuid4().hex}",
+            amount=order.get_total(),
+            status=STATUS_PENDING,
+        )
+
+        if not settings.PAYMENTS_ENABLED:
+            payment.provider_payment_id = f"dev_paypal_{payment.id}"
+            payment.save(update_fields=["provider_payment_id"])
+            return JsonResponse({
+                "paymentID": payment.provider_payment_id,
+                "approval_url": "/payment/paypal/execute/",
+            })
+
         payment = create_payment(order)
+        payment.provider_payment_id = f"dev_paypal_{payment.id}"
+        payment.save(update_fields=["provider_payment_id"])
 
         approval_url = next(
             link.href for link in payment.links if link.rel == "approval_url"
         )
 
         return JsonResponse({
-            "paymentID": payment.id,
+            "paymentID": payment.provider_payment_id,
             "approval_url": approval_url,
         })
 
 
 class PaypalExecutePaymentView(LoginRequiredMixin, View):
-    def post(self, request, *args, **kwargs):
-        payment_id = request.POST.get("paymentID")
-        payer_id = request.POST.get("payerID")
+    def get(self, request, *args, **kwargs):
+        payment_id = request.GET.get("paymentID")
+        payment = (
+            Payment.objects
+            .filter(
+                provider=PROVIDER_PAYPAL,
+                provider_payment_id=payment_id,
+                status=STATUS_PENDING,
+            )
+            .first()
+        )
 
-        execute_payment(payment_id, payer_id)
+        if payment:
+            messages.info(request, "Payment is not paid.")
+            return redirect("/payment/paypal/")
+
+        messages.success(self.request, "Your order was successful!")
+        return redirect("/")
+
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body.decode("utf-8"))
+
+        payment_id = data.get("paymentID")
+        payer_id = data.get("payerID")
+
+        payment = get_object_or_404(
+            Payment,
+            provider=PROVIDER_PAYPAL,
+            provider_payment_id=payment_id,
+            status=STATUS_PENDING,
+        )
+
+        order = payment.order
+
+        if order.user != request.user:
+            return JsonResponse({"success": False}, status=403)
+
+        if not settings.PAYMENTS_ENABLED:
+            payment.status = STATUS_PAID
+            payment.save(update_fields=["status"])
+
+            order.ordered = True
+            order.ordered_date = timezone.now()
+            order.items.update(ordered=True)
+            order.save(update_fields=["ordered", "ordered_date"])
+
+            return JsonResponse({"success": True})
+
+        paypal_payment = execute_payment(payment_id, payer_id)
+        txn = paypal_payment.transactions[0]
+
+        if txn.amount.total != f"{payment.amount:.2f}":
+            return JsonResponse({"success": False}, status=400)
+
+        payment.status = STATUS_PAID
+        payment.save(update_fields=["status"])
+
+        order.ordered = True
+        order.ordered_date = timezone.now()
+        order.items.update(ordered=True)
+        order.save(update_fields=["ordered", "ordered_date"])
 
         return JsonResponse({"success": True})

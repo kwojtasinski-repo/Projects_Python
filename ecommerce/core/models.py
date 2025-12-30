@@ -22,6 +22,24 @@ ADDRESS_CHOICES=(
     ('S', 'Shipping')
 )
 
+STATUS_PENDING = "PENDING"
+STATUS_PAID = "PAID"
+STATUS_FAILED = "FAILED"
+
+STATUS_CHOICES = [
+    (STATUS_PENDING, "Pending"),
+    (STATUS_PAID, "Paid"),
+    (STATUS_FAILED, "Failed"),
+]
+
+PROVIDER_STRIPE = "stripe"
+PROVIDER_PAYPAL = "paypal"
+
+PROVIDER_CHOICES = [
+    (PROVIDER_STRIPE, "Stripe"),
+    (PROVIDER_PAYPAL, "PayPal"),
+]
+
 # Create your models here.
 class UserProfile(models.Model):
      user = models.OneToOneField(
@@ -88,7 +106,6 @@ class Order(models.Model):
     ordered = models.BooleanField(default=False)
     shipping_address= models.ForeignKey('Address', related_name='shipping_address', on_delete=models.SET_NULL, blank=True, null=True)
     billing_address= models.ForeignKey('Address', related_name='billing_address', on_delete=models.SET_NULL, blank=True, null=True)
-    payment= models.ForeignKey('Payment', on_delete=models.SET_NULL, blank=True, null=True)
     coupon = models.ForeignKey('Coupon', on_delete=models.SET_NULL, blank=True, null=True)
     being_delivered = models.BooleanField(default=False)
     received = models.BooleanField(default=False)
@@ -134,9 +151,28 @@ class Address(models.Model):
 
 
 class Payment(models.Model):
-    stripe_charge_id= models.CharField(max_length=50)
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.PROTECT,
+        related_name="payments",
+        null=False
+    )
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True)
-    amount = models.FloatField()
+    provider = models.CharField(
+        max_length=20,
+        choices=PROVIDER_CHOICES,
+    )
+    provider_payment_id = models.CharField(
+        max_length=255,
+        unique=True,
+        null=False
+    )
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default=STATUS_PENDING,
+    )
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

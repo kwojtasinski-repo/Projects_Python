@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load js_filters %}
 {% block extra_head %}
 <style>
   button:hover {
@@ -28,44 +28,84 @@
 
           <div class="card">
 
-            <div id="paypal-button" class="text-center"></div>
-
-            <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+            {% if not PAYMENTS_ENABLED %}
+              <div>
+                <button id="paypal-button" class="btn btn-primary btn-lg btn-block">Pay with PayPal (Dev Mode)</button>
+              </div>
+            {% else %}
+              <div id="paypal-button" class="text-center"></div>
+              <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+            {% endif %}
 
             <script>
-                const CREATE_PAYMENT_URL  = 'http://127.0.0.1:8000/payment/paypal/create/';
-                const EXECUTE_PAYMENT_URL = 'http://127.0.0.1:8000/payment/paypal/execute/';
+                const createPaymentUrl  = "{% url 'core:paypal-create' %}";
+                const executePaymentUrl = "{% url 'core:paypal-execute' %}";
                 const csrfToken = '{{ csrf_token }}';
+                const paymentsEnabled = {{ PAYMENTS_ENABLED|js_bool }};
 
-                paypal.Button.render({
+                if (paymentsEnabled === false) {
+                  const paypalButton = document.getElementById('paypal-button');
+                  paypalButton.onclick = function() {
+                    fetch(createPaymentUrl, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                      },
+                      body: JSON.stringify({}),
+                    })
+                    .then(response => response.json())
+                    .then(createData => {
+                      const result = fetch(createData.approval_url, {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'X-CSRFToken': csrfToken,
+                        },
+                        body: JSON.stringify({
+                          paymentID: createData.paymentID,
+                          payerID: 'DEV_PAYER',
+                        })
+                      });
+                      return { result, createData }
+                    })
+                    .then(executeData => {
+                      window.location.href = "{% url 'core:paypal-execute' %}?paymentID=" + executeData?.createData?.paymentID;
+                    })
+                  }
+                }
+                else 
+                {
+                  paypal.Button.render({
 
-                    env: 'sandbox', // Or 'sandbox'
+                      env: 'sandbox', // Or 'sandbox'
 
-                    commit: true, // Show a 'Pay Now' button
+                      commit: true, // Show a 'Pay Now' button
 
-                    payment: function() {
-                        return paypal.request.post(CREATE_PAYMENT_URL, {}, {
-                          headers: {
-                            'X-CSRFToken': csrfToken
-                          }
-                        }).then(function(data) {
-                            return data.paymentID;
-                        });
-                    },
+                      payment: function() {
+                          return paypal.request.post(createPaymentUrl, {}, {
+                            headers: {
+                              'X-CSRFToken': csrfToken
+                            }
+                          }).then(function(data) {
+                              return data.paymentID;
+                          });
+                      },
 
-                    onAuthorize: function(data) {
-                        return paypal.request.post(EXECUTE_PAYMENT_URL, {
-                            paymentID: data.paymentID,
-                            payerID:   data.payerID
-                        }).then(function(res) {
+                      onAuthorize: function(data) {
+                          return paypal.request.post(executePaymentUrl, {
+                              paymentID: data.paymentID,
+                              payerID:   data.payerID
+                          }).then(function(res) {
 
-                            console.log(res.success)
-                            // The payment is complete!
-                            // You can now show a confirmation message to the customer
-                        });
-                    }
+                              console.log(res.success)
+                              // The payment is complete!
+                              // You can now show a confirmation message to the customer
+                          });
+                      }
 
-                }, '#paypal-button');
+                  }, '#paypal-button');
+                }
             </script>
 
           </div>

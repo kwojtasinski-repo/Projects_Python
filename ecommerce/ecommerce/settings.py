@@ -10,12 +10,14 @@ def env_bool(name: str, default: bool = False) -> bool:
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
-DEBUG = os.getenv("DEBUG", "1") == "1"
+DEBUG = env_bool("DEBUG", True)
 
 SECRET_KEY = os.getenv(
     "SECRET_KEY",
     "insecure-dev-key"
 )
+
+PAYMENTS_ENABLED = env_bool("PAYMENTS_ENABLED", False)
 
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
 PAYPAL_MODE = os.getenv("PAYPAL_MODE", "sandbox")
@@ -72,6 +74,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                "core.context_processors.payments_settings",
             ],
         },
     },
